@@ -1,6 +1,17 @@
-# gui/filter_config_window.py
 import tkinter as tk
 from tkinter import ttk, messagebox
+import sys
+import os
+
+#getting absolute path to project root (one level above 'gui')
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+#adding 'analysis' folder to sys.path
+analysis_path = os.path.join(project_root, 'analysis')
+sys.path.insert(0, analysis_path)
+
+import applying_filter 
+
 
 def open_filter_config(input_audio_path, output_audio_name, output_audio_location, status_var, process_callback):
     def apply_settings():
@@ -46,6 +57,7 @@ def open_filter_config(input_audio_path, output_audio_name, output_audio_locatio
             status_var,
             filter_settings=config
         )
+        applying_filter.apply_filter(f"{input_audio_path.get()}", f"{output_audio_name.get()}", f"{output_audio_location.get()}", config)
         window.destroy()
 
     def update_fields(*args):
