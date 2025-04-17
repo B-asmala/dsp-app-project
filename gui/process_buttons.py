@@ -2,6 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 from utils.validators import validate_inputs
 from gui.filter_config_window import open_filter_config
+from pydub import AudioSegment
+
+def compress_audio(input_path, output_path):
+    audio = AudioSegment.from_file(input_path, format="wav")
+    audio.export(output_path, format="mp3", bitrate="64k")  
 
 def process(name, input_path, output_name, output_loc, status_var, filter_settings=None):
     # Validate inputs first (applies for all processes)
@@ -10,6 +15,11 @@ def process(name, input_path, output_name, output_loc, status_var, filter_settin
 
     if name == "Filter":
         print("Selected Filter Settings:", filter_settings)  # Debugging print
+    elif name == "Compression":
+        input_file = input_path.get()
+        output_file = f"{output_loc.get()}/{output_name.get()}.mp3"
+        compress_audio(input_file, output_file)
+
     else:
         print(f"Running {name} on {input_path.get()}")
 
