@@ -3,6 +3,8 @@ from tkinter import messagebox
 from utils.validators import validate_inputs
 from gui.filter_config_window import open_filter_config
 from pydub import AudioSegment
+import os 
+from analysis.noise_cancellation import apply_noise_cancellation
 
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")
@@ -65,8 +67,28 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     status_var,
                     lambda *args, **kwargs: process(n, input_audio_path, output_audio_name, output_audio_location, status_var, filter_settings=kwargs.get('filter_settings'))
                 )
-            else:
-                process(n, input_audio_path, output_audio_name, output_audio_location, status_var)
+            elif n == "Noise Canceling":
+            
+                output_dir = output_audio_location.get()
+                output_name = output_audio_name.get()
+                output_path = os.path.join(output_dir, f"{output_name}_denoised.wav")
+                
+                try:
+                    os.makedirs(output_dir, exist_ok=True)
+                    success = apply_noise_cancellation(
+                        input_audio_path.get(),
+                        output_path,
+                        status_var
+                    )
+                    if success:
+                        messagebox.showinfo("Success", f"File saved to:\n{output_path}")
+                    else:
+                        messagebox.showerror("Error", "Failed to process audio")
+                except Exception as e:
+                    status_var.set("Path error")
+                    messagebox.showerror("Error", f"Invalid path: {str(e)}")
+
+
 
         btn = tk.Button(
             frame, text=name, width=20, height=2,
