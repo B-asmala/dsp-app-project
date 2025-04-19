@@ -109,6 +109,7 @@ def BandStopIIR(audio_path,n,lowCutFreq,highCutFreq):
     y = lfilter(b, a, x)
     
     return y, Fs
+<<<<<<< HEAD
 # FIR Low Pass filter function
 def LowPassFIR(audio_path, n, cutoffFreq):
     Fs, x = wavfile.read(audio_path)
@@ -156,3 +157,5 @@ def HighPassIIR(audio_path, n, cutoffFreq):
     b, a = butter(n, high, btype='high')
     y = lfilter(b, a, x)    
     return y, Fs
+=======
+>>>>>>> 3fa48381a64cc223d33496c4c63dd3dfc9af3295
