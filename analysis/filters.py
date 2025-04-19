@@ -109,3 +109,53 @@ def BandStopIIR(audio_path,n,lowCutFreq,highCutFreq):
     y = lfilter(b, a, x)
     
     return y, Fs
+<<<<<<< HEAD
+# FIR Low Pass filter function
+def LowPassFIR(audio_path, n, cutoffFreq):
+    Fs, x = wavfile.read(audio_path)
+    N = len(x)
+    time = N / Fs
+    t = np.linspace(0, time, N)
+
+    b = firwin(n, cutoffFreq, pass_zero=True, fs=Fs)
+    y = lfilter(b, 1, x)    
+    return y, Fs
+
+
+# FIR High Pass filter function
+def HighPassFIR(audio_path, n, cutoffFreq):
+    Fs, x = wavfile.read(audio_path)
+    N = len(x)
+    time = N / Fs
+    t = np.linspace(0, time, N)
+
+    b = firwin(n, cutoffFreq, pass_zero=False, fs=Fs)
+    y = lfilter(b, 1, x)    
+    return y, Fs
+
+
+# IIR Low Pass filter function
+def LowPassIIR(audio_path, n, cutoffFreq):
+    Fs, x = wavfile.read(audio_path)
+    N = len(x)
+    time = N / Fs
+    t = np.linspace(0, time, N)
+    
+    low = cutoffFreq / (Fs / 2)
+    b, a = butter(n, low, btype='low')
+    y = lfilter(b, a, x)    
+    return y, Fs
+
+# IIR High Pass filter function
+def HighPassIIR(audio_path, n, cutoffFreq):
+    Fs, x = wavfile.read(audio_path)
+    N = len(x)
+    time = N / Fs
+    t = np.linspace(0, time, N)
+    
+    high = cutoffFreq / (Fs / 2)
+    b, a = butter(n, high, btype='high')
+    y = lfilter(b, a, x)    
+    return y, Fs
+=======
+>>>>>>> 3fa48381a64cc223d33496c4c63dd3dfc9af3295
