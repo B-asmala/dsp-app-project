@@ -5,6 +5,8 @@ from gui.filter_config_window import open_filter_config
 from pydub import AudioSegment
 import os 
 from analysis.noise_cancellation import apply_noise_cancellation
+from utils.encrypt import encrypt_audio
+from utils.decrypt import decrypt_audio
 
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")
@@ -96,6 +98,23 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     status_var.set("Path error")
                     messagebox.showerror("Error", f"Invalid path: {str(e)}")
 
+            elif n == "Encryption":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_encrypted.wav")
+                try:
+                    encrypt_audio(input_file, output_file)
+                    messagebox.showinfo("✅Success", f"🔐Encrypted file saved to:\n{output_file}")
+                except Exception as e:
+                    messagebox.showerror("Encryption Error", str(e))
+
+            elif n == "Decryption":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_decrypted.wav")
+                try:
+                    decrypt_audio(input_file, output_file)
+                    messagebox.showinfo("✅Success", f"🔓Decrypted file saved to:\n{output_file}")
+                except Exception as e:
+                    messagebox.showerror("Decryption Error", str(e))
 
 
         btn = tk.Button(
