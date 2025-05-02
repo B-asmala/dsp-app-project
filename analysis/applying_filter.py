@@ -15,7 +15,6 @@ def apply_filter(input_audio_path, output_audio_name, output_audio_location, con
   
   if config['filter_type'] == "Notch" and config['model_type'] =="IIR":
     y, Fs = filters.BandStopIIR(input_audio_path, int(config['order']), int(config['low_freq']), int(config['high_freq']))
-<<<<<<< HEAD
 
   # Low Pass High Pass 
   if config['filter_type'] == "Low Pass" and config['model_type'] == "FIR":
@@ -29,8 +28,7 @@ def apply_filter(input_audio_path, output_audio_name, output_audio_location, con
     
   if config['filter_type'] == "High Pass" and config['model_type'] == "IIR":
     y, Fs = filters.HighPassIIR(input_audio_path, int(config['order']), int(config['low_freq']))
-=======
->>>>>>> 3fa48381a64cc223d33496c4c63dd3dfc9af3295
+
   
   #normalize output array signla to [-1, 1]
   y = y / np.max(np.abs(y)) 
@@ -40,9 +38,4 @@ def apply_filter(input_audio_path, output_audio_name, output_audio_location, con
 
   #saving output audio wav file
   write(f"{output_audio_location}/{output_audio_name}.wav", Fs, y_int16)
-<<<<<<< HEAD
-=======
 
-
-
->>>>>>> 3fa48381a64cc223d33496c4c63dd3dfc9af3295
