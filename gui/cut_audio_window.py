@@ -56,7 +56,7 @@ def open_cut_audio_window(input_path, output_name, output_loc, status_var, proce
             )
             return
 
-        cut_settings = {"start": start, "end": end}
+        cut_settings = {"start": start*1000, "end": end*1000}
 
         window.destroy()
         process_callback(

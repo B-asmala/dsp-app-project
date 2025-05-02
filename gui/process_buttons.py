@@ -13,6 +13,13 @@ def decompress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="mp3")
     audio.export(output_path, format="wav")
 
+def cut_audio(input_path, output_path, start, end):
+    audio = AudioSegment.from_file(input_path, format="wav") 
+    first_part = audio[:start]
+    second_part = audio[end:]
+    combined = first_part + second_part
+    combined.export(output_path, format="wav")
+
 def process(name, input_path, output_name, output_loc, status_var, filter_settings=None, cut_settings=None):
     # Validate inputs first (applies for all processes)
     if not validate_inputs(input_path, output_name, output_loc):
@@ -29,7 +36,9 @@ def process(name, input_path, output_name, output_loc, status_var, filter_settin
         output_file = f"{output_loc.get()}/{output_name.get()}.wav"
         decompress_audio(input_file, output_file)
     elif name == "Cut Audio":
-        print(f"Cutting from {cut_settings['start']}s to {cut_settings['end']}s")
+        input_file = input_path.get()
+        output_file = f"{output_loc.get()}/{output_name.get()}.wav"
+        cut_audio(input_file, output_file, cut_settings["start"], cut_settings["end"])
     else:
         print(f"Running {name} on {input_path.get()}")
 
