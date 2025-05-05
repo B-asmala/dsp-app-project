@@ -7,6 +7,8 @@ import os
 from analysis.noise_cancellation import apply_noise_cancellation
 from utils.encrypt import encrypt_audio
 from utils.decrypt import decrypt_audio
+from utils.fourier_transform import manual_dft
+from utils.fourier_transform import recursive_fft
 
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")
@@ -115,6 +117,12 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     messagebox.showinfo("✅Success", f"🔓Decrypted file saved to:\n{output_file}")
                 except Exception as e:
                     messagebox.showerror("Decryption Error", str(e))
+            elif n == "Fourier Transform":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_ft.png")
+                manual_dft(input_file, output_file)
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_cooley_turkey_ft.png")
+                recursive_fft(input_file, output_file)
 
 
         btn = tk.Button(
