@@ -9,6 +9,10 @@ import os
 from analysis.noise_cancellation import apply_noise_cancellation
 from utils.encrypt import encrypt_audio
 from utils.decrypt import decrypt_audio
+from utils.fourier_transform import manual_dft
+from utils.fourier_transform import recursive_fft
+from utils.visualizations import plot_fft
+from utils.visualizations import plot_waveform
 from gui.cut_audio_window import open_cut_audio_window
 
 AudioSegment.converter = "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffmpeg"
@@ -128,7 +132,13 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                 manual_dft(input_file, output_file)
                 output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_cooley_turkey_ft.png")
                 recursive_fft(input_file, output_file)
-
+            elif n == "Visualization":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_time.png")
+                plot_waveform(input_file, output_file)
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_freq.png")
+                plot_fft(input_file, output_file)
 
         btn = tk.Button(
             frame, text=name, width=20, height=2,
