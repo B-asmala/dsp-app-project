@@ -2,12 +2,25 @@ import tkinter as tk
 from tkinter import messagebox
 from utils.validators import validate_inputs
 from gui.filter_config_window import open_filter_config
+import pydub
 from pydub import AudioSegment
+from pydub.utils import which
 import os 
 from analysis.noise_cancellation import apply_noise_cancellation
 from utils.encrypt import encrypt_audio
 from utils.decrypt import decrypt_audio
+from utils.fourier_transform import manual_dft
+from utils.fourier_transform import recursive_fft
+from utils.visualizations import plot_fft
+from utils.visualizations import plot_waveform
 from gui.cut_audio_window import open_cut_audio_window
+
+AudioSegment.converter = "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffmpeg"
+pydub.utils._which = lambda name: "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffprobe" if name == "ffprobe" else which(name)
+
+
+from gui.cut_audio_window import open_cut_audio_window
+
 
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")
@@ -140,6 +153,21 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     messagebox.showinfo("✅Success", f"🔓Decrypted file saved to:\n{output_file}")
                 except Exception as e:
                     messagebox.showerror("Decryption Error", str(e))
+
+            elif n == "Fourier Transform":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_ft.png")
+                manual_dft(input_file, output_file)
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_cooley_turkey_ft.png")
+                recursive_fft(input_file, output_file)
+            elif n == "Visualization":
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_time.png")
+                plot_waveform(input_file, output_file)
+                input_file = input_audio_path.get()
+                output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_freq.png")
+                plot_fft(input_file, output_file)
+
                 
             elif n == "Cut Audio":
                 open_cut_audio_window(
@@ -149,6 +177,7 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
 
             else:
                 process(n, input_audio_path, output_audio_name, output_audio_location, status_var)
+
 
 
         btn = tk.Button(
