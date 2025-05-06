@@ -2,13 +2,18 @@ import tkinter as tk
 from tkinter import messagebox
 from utils.validators import validate_inputs
 from gui.filter_config_window import open_filter_config
+import pydub
 from pydub import AudioSegment
+from pydub.utils import which
 import os 
 from analysis.noise_cancellation import apply_noise_cancellation
 from utils.encrypt import encrypt_audio
 from utils.decrypt import decrypt_audio
-from utils.fourier_transform import manual_dft
-from utils.fourier_transform import recursive_fft
+from gui.cut_audio_window import open_cut_audio_window
+
+AudioSegment.converter = "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffmpeg"
+pydub.utils._which = lambda name: "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffprobe" if name == "ffprobe" else which(name)
+
 
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")

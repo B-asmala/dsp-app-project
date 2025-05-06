@@ -7,7 +7,7 @@ from gui.process_buttons import create_process_buttons
 def launch_app():
     root = tk.Tk()
     root.title("Audio Processor")
-    root.geometry("650x390")
+    root.geometry("750x390")
     root.resizable(False, False)
 
     # Get the input path variable
