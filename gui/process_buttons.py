@@ -19,29 +19,55 @@ AudioSegment.converter = "/home/basmala/python/ffmpeg-git-20240629-amd64-static/
 pydub.utils._which = lambda name: "/home/basmala/python/ffmpeg-git-20240629-amd64-static/ffprobe" if name == "ffprobe" else which(name)
 
 
+from gui.cut_audio_window import open_cut_audio_window
+
+
 def compress_audio(input_path, output_path):
     audio = AudioSegment.from_file(input_path, format="wav")
     audio.export(output_path, format="mp3", bitrate="64k")  
 
 def decompress_audio(input_path, output_path):
-    audio = AudioSegment.from_file(input_path, format="mp3")
-    audio.export(output_path, format="wav")
+    if not input_path.lower().endswith('.mp3'):
+        raise ValueError("Decompression only supports MP3 files.")
+    
+    try:
+        audio = AudioSegment.from_file(input_path, format="mp3")
+        audio.export(output_path, format="wav")
+    except Exception as e:
+        raise ValueError(f"Decompression failed: {str(e)}")
 
-def process(name, input_path, output_name, output_loc, status_var, filter_settings=None):
+def cut_audio(input_path, output_path, start, end):
+    try:
+        audio = AudioSegment.from_file(input_path, format="wav") 
+        first_part = audio[:start]
+        second_part = audio[end:]
+        combined = first_part + second_part
+        combined.export(output_path, format="wav")
+    except Exception as e:
+        raise ValueError(f"Failed to cut audio: {str(e)}")
+
+def process(name, input_path, output_name, output_loc, status_var, filter_settings=None, cut_settings=None):
     # Validate inputs first (applies for all processes)
     if not validate_inputs(input_path, output_name, output_loc):
         return
 
     if name == "Filter":
         print("Selected Filter Settings:", filter_settings)  # Debugging print
+
     elif name == "Compression":
         input_file = input_path.get()
         output_file = f"{output_loc.get()}/{output_name.get()}.mp3"
         compress_audio(input_file, output_file)
+
     elif name == "Decompression":
         input_file = input_path.get()
         output_file = f"{output_loc.get()}/{output_name.get()}.wav"
         decompress_audio(input_file, output_file)
+
+    elif name == "Cut Audio":
+        input_file = input_path.get()
+        output_file = f"{output_loc.get()}/{output_name.get()}.wav"
+        cut_audio(input_file, output_file, cut_settings["start"], cut_settings["end"])
 
     else:
         print(f"Running {name} on {input_path.get()}")
@@ -69,7 +95,7 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
     processes = [
         "Noise Canceling", "Visualization", "Filter",
         "Compression", "Decompression", "Encryption",
-        "Decryption", "Fourier Transform"
+        "Decryption", "Fourier Transform", "Cut Audio"
     ]
 
     # Dynamically create buttons in rows
@@ -88,6 +114,7 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     status_var,
                     lambda *args, **kwargs: process(n, input_audio_path, output_audio_name, output_audio_location, status_var, filter_settings=kwargs.get('filter_settings'))
                 )
+
             elif n == "Noise Canceling":
             
                 output_dir = output_audio_location.get()
@@ -126,6 +153,7 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                     messagebox.showinfo("✅Success", f"🔓Decrypted file saved to:\n{output_file}")
                 except Exception as e:
                     messagebox.showerror("Decryption Error", str(e))
+
             elif n == "Fourier Transform":
                 input_file = input_audio_path.get()
                 output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_ft.png")
@@ -140,9 +168,21 @@ def create_process_buttons(root, input_audio_path, output_audio_name, output_aud
                 output_file = os.path.join(output_audio_location.get(), f"{output_audio_name.get()}_freq.png")
                 plot_fft(input_file, output_file)
 
+                
+            elif n == "Cut Audio":
+                open_cut_audio_window(
+                    input_audio_path, output_audio_name, output_audio_location,
+                    status_var, process
+                )
+
+            else:
+                process(n, input_audio_path, output_audio_name, output_audio_location, status_var)
+
+
+
         btn = tk.Button(
             frame, text=name, width=20, height=2,
             command=button_action
         )
-        btn.grid(row=(index // 3) + 1, column=index % 3, padx=10, pady=10)
+        btn.grid(row=(index // 3) + 1, column=index % 3, padx=23, pady=10)
 
